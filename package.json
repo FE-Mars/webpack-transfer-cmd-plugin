@@ -1,0 +1,15 @@
+{
+  "name": "webpack-transfer-cmd-plugin",
+  "version": "1.0.1",
+  "description": "complie to CMD module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "webpack",
+    "cmd"
+  ],
+  "author": "jwong",
+  "license": "ISC"
+}
