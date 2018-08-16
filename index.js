@@ -17,7 +17,7 @@ class TransferToCmdPlugin {
         if(options.entryOnly && !chunk.canBeInitial()) return;
         // 检索由 chunk 生成的每个资源(asset)文件名：
         chunk.files.forEach(function(filename) {
-          if(/\.js$/.test(filename)){     //只处理js文件
+          if(/\.js$/.test(filename) && !/hot-update\.js$/.test(filename)){     //只处理js文件
             let js_source = compilation.assets[filename].source(), css_source = '';
             if(options.include_css){    //需要包含css时
               let css_name = filename.replace(/\.js$/, '.css');
