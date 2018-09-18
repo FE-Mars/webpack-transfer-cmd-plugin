@@ -1,4 +1,12 @@
 const pluginName = 'TransferToCmdPlugin';
+
+function hasCss(files, name) {
+  let reg = new RegExp(`^(${name}\\.)\.*(\\.css)$`)
+  return !!files.find(file => {
+    return reg.test(file);
+  });
+}
+
 class TransferToCmdPlugin {
   constructor(options) {
     let defaults= {
@@ -18,12 +26,12 @@ class TransferToCmdPlugin {
         // 检索由 chunk 生成的每个资源(asset)文件名：
         chunk.files.forEach(function(filename) {
           if(/\.js$/.test(filename) && !/hot-update\.js$/.test(filename)){     //只处理js文件
-            let js_source = compilation.assets[filename].source(), css_source = '';
-            if(options.include_css){    //需要包含css时
-              let css_name = filename.replace(/\.js$/, '.css');
-              css_source = compilation.assets[css_name] ? `require('./${css_name}');` : '';
+            let js_source = compilation.assets[filename].source(), 
+            css_source = '';
+            if(options.include_css && hasCss(chunk.files, chunk.name)){    //需要包含css时
+              css_source = `require('./${chunk.name}.css');`
             }
-            let cmdSource = `define(function(require, exports, module){${css_source}${js_source}\n})`;
+            let cmdSource = `define(function(require, exports, module){${css_source}${js_source}})`;
             compilation.assets[filename] = {
               source: () => {
                 return cmdSource;
