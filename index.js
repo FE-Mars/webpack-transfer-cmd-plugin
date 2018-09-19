@@ -31,7 +31,7 @@ class TransferToCmdPlugin {
             if(options.include_css && hasCss(chunk.files, chunk.name)){    //需要包含css时
               css_source = `require('./${chunk.name}.css');`
             }
-            let cmdSource = `define(function(require, exports, module){${css_source}${js_source}})`;
+            let cmdSource = `define(function(require, exports, module){${css_source}${js_source}\n})`;
             compilation.assets[filename] = {
               source: () => {
                 return cmdSource;
