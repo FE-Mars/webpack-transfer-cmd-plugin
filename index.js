@@ -22,7 +22,8 @@ class TransferToCmdPlugin {
         // 检索每个（构建输出的）chunk：
       compilation.chunks.forEach((chunk) => {
         //入口文件都是默认首次加载的，即 canBeInitial为true 和 require.ensure 按需加载是完全不一样的
-        if(options.entryOnly && !chunk.canBeInitial()) return;
+        // if(options.entryOnly && !chunk.canBeInitial()) return;
+        if(options.entryOnly && !chunk.isOnlyInitial()) return;  //isOnlyInitial  https://github.com/webpack/webpack/blob/master/lib/Chunk.js#L411
         // 检索由 chunk 生成的每个资源(asset)文件名：
         chunk.files.forEach(function(filename) {
           if(/\.js$/.test(filename) && !/hot-update\.js$/.test(filename)){     //只处理js文件
