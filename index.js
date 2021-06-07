@@ -11,7 +11,8 @@ class TransferToCmdPlugin {
   constructor(options) {
     let defaults= {
       entryOnly: true,    //如果值为 true，将只对入口 chunks 文件做CMD处理
-      include_css: true
+      include_css: true,
+      auto_load_depend: false, // 自动加载依赖模块
     }
     this.options = Object.assign({}, defaults, options);
   }
@@ -32,7 +33,24 @@ class TransferToCmdPlugin {
             if(options.include_css && hasCss(chunk.files, chunk.name)){    //需要包含css时
               css_source = `require('./${chunk.name}.css');`
             }
-            let cmdSource = `define(function(require, exports, module){${js_source}${css_source}\n})`;
+            let load_depend_module = '';
+            if (options.auto_load_depend) {
+              let name = filename.split('.')[0];
+              let entrypoint = compilation.entrypoints.get(name);
+              let library = typeof options.auto_load_depend === 'object' ? options.auto_load_depend.publicPath : compilation.outputOptions.library.toLowerCase();
+
+              if (entrypoint && entrypoint.chunks && entrypoint.chunks.length) {
+                let modules = [];
+                let chunks = entrypoint.chunks.filter(item => item.id !== name).map(item => item.id);
+                
+                (chunks || []).forEach(item => {
+                  modules.push(`require('${library}/${item}');`);
+                })
+
+                load_depend_module = modules.join('\n');
+              }
+            }
+            let cmdSource = `define(function(require, exports, module){${load_depend_module}${js_source}${css_source}\n})`;
             compilation.assets[filename] = {
               source: () => {
                 return cmdSource;
