@@ -41,13 +41,13 @@ class TransferToCmdPlugin {
 
               if (entrypoint && entrypoint.chunks && entrypoint.chunks.length) {
                 let modules = [];
-                let chunks = entrypoint.chunks.filter(item => item.id !== name).map(item => item.id);
-                
-                (chunks || []).forEach(item => {
+                let chunks = entrypoint.chunks.filter(item => item.name !== name).map(item => (item.files || []).filter(cItem => cItem.substring(cItem.lastIndexOf('.') + 1) === 'js')[0]);
+                chunks = chunks.filter(item => item !== undefined && item !== null);
+                chunks.forEach(item => {
                   modules.push(`require('${library}/${item}');`);
                 })
 
-                load_depend_module = modules.join('\n');
+                load_depend_module = modules.join('');
               }
             }
             let cmdSource = `define(function(require, exports, module){${load_depend_module}${js_source}${css_source}\n})`;
