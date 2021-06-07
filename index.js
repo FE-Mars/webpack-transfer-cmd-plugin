@@ -41,11 +41,18 @@ class TransferToCmdPlugin {
 
               if (entrypoint && entrypoint.chunks && entrypoint.chunks.length) {
                 let modules = [];
-                let chunks = entrypoint.chunks.filter(item => item.name !== name).map(item => (item.files || []).filter(cItem => cItem.substring(cItem.lastIndexOf('.') + 1) === 'js')[0]);
-                chunks = chunks.filter(item => item !== undefined && item !== null);
-                chunks.forEach(item => {
-                  modules.push(`require('${library}/${item}');`);
-                })
+
+                entrypoint.chunks.forEach(item => {
+                  if (item.name !== name) {
+                    item.files.forEach(cItem => {
+                      let ext = cItem.substring(cItem.lastIndexOf('.') + 1);
+
+                      if (ext === 'js' || (options.include_css && ext === 'css')) {
+                        modules.push(`require('${library}/${cItem}');`);
+                      }
+                    })
+                  }
+                });
 
                 load_depend_module = modules.join('');
               }
